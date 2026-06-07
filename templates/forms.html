@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Запись на маникюр{% endblock %}
+
+{% block left_content %}
+    <h1>Записаться на услугу</h1>
+    <p>Оставьте свои данные и наш администратор<br> свяжется с вами для подтверждения записи<br> и подбора удобного времени</p>
+    <form action="#" method="post" class="forms">
+    <div class="phone-line">
+        <span class="material-symbols-outlined">phone_in_talk</span>
+        <input type="tel" name="phone" placeholder="Номер телефона" required>
+    </div>
+    <div class="input-line">
+        <span class="material-symbols-outlined">person</span>
+        <input type="text" name="name" placeholder="Имя" required>
+    </div>
+    <div class="fullname-line">
+        <span class="material-symbols-outlined">badge</span>
+        <input type="text" name="fullname" placeholder="Фамилия" required>
+    </div>
+    <button type="submit">Отправить</button>
+</form>
+{% endblock %}
+
+{# right_part уже есть в base.html #}

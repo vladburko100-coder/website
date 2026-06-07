@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <nav>
+        <div class="navbar">
+            <div class="nav-links">
+                <img src="/static/images/nail.png" alt="logo" class="logo-img">
+                <a href="{{ url_for('home') }}"><span>О НАС</span></a>
+                <a href="{{ url_for('form') }}"><span>УСЛУГИ</span></a>
+                <a href="#"><span>ПРАЙС</span></a>
+                <a href="#"><span>ГАЛЕРЕЯ</span></a>
+            </div>
+            <div class="phone-wrapper">
+                <span class="material-symbols-outlined">phone_callback</span>
+                <a class="phone-number">8(928) 305 44 44</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main>
+        <div class="main-cnt">
+            <div class="left-part">
+                {% block left_content %}{% endblock %}
+            </div>
+        </div>
+        <div class="right-part">
+            <img class="nails1" src="/static/images/nails_first.jpeg" alt="">
+            <img class="nails2" src="/static/images/nails_second.jpeg" alt="">
+            {% block right_content %}{% endblock %}
+        </div>
+    </main>
+</body>
+</html>
