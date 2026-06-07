@@ -5,10 +5,16 @@
 {% block left_content %}
     <h1>Записаться на услугу</h1>
     <p>Оставьте свои данные и наш администратор<br> свяжется с вами для подтверждения записи<br> и подбора удобного времени</p>
+    {% if error %}
+    <div class="error-message">
+        <span class="material-symbols-outlined">error</span>
+        <p>{{ error }}</p>
+    </div>
+    {% endif %}
     <form action="#" method="post" class="forms">
     <div class="phone-line">
         <span class="material-symbols-outlined">phone_in_talk</span>
-        <input type="tel" name="phone" placeholder="Номер телефона" required>
+        <input type="tel" id="phone" name="phone" placeholder="Номер телефона" required>
     </div>
     <div class="input-line">
         <span class="material-symbols-outlined">person</span>
@@ -21,5 +27,52 @@
     <button type="submit">Отправить</button>
 </form>
 {% endblock %}
-
-{# right_part уже есть в base.html #}
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const phoneInput = document.getElementById('phone');
+        
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let cursorPos = e.target.selectionStart;
+                let oldLength = e.target.value.length;
+                let numbers = e.target.value.replace(/\D/g, '');
+                
+                if (numbers.length > 0 && numbers[0] !== '7') {
+                    numbers = '7' + numbers.substring(1);
+                }
+                
+                if (numbers.length > 11) {
+                    numbers = numbers.slice(0, 11);
+                }
+                
+                let formatted = '';
+                
+                if (numbers.length > 0) {
+                    formatted = '+7';
+                    if (numbers.length >= 2) {
+                        formatted += ' (' + numbers.substring(1, 4);
+                    }
+                    if (numbers.length >= 5) {
+                        formatted += ') ' + numbers.substring(4, 7);
+                    }
+                    if (numbers.length >= 8) {
+                        formatted += '-' + numbers.substring(7, 9);
+                    }
+                    if (numbers.length >= 10) {
+                        formatted += '-' + numbers.substring(9, 11);
+                    }
+                }
+                
+                e.target.value = formatted;
+                
+                let newLength = e.target.value.length;
+                let diff = newLength - oldLength;
+                if (cursorPos + diff >= 0) {
+                    e.target.setSelectionRange(cursorPos + diff, cursorPos + diff);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

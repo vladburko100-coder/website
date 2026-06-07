@@ -16,7 +16,7 @@
         <div class="navbar">
             <div class="nav-links">
                 <img src="/static/images/nail.png" alt="logo" class="logo-img">
-                <a href="{{ url_for('home') }}"><span>О НАС</span></a>
+                <a href="{{ url_for('home') }}"><span>ГЛАВНАЯ</span></a>
                 <a href="{{ url_for('form') }}"><span>УСЛУГИ</span></a>
                 <a href="#"><span>ПРАЙС</span></a>
                 <a href="#"><span>ГАЛЕРЕЯ</span></a>
@@ -40,5 +40,6 @@
             {% block right_content %}{% endblock %}
         </div>
     </main>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

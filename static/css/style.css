@@ -53,7 +53,7 @@ a {
     display: flex;
     flex-direction: column;
     align-items: left;
-    gap: 3rem;
+    gap: 1.5rem;
     width: 700px;
     background-color:  #f6ddd9;
 }
@@ -162,7 +162,7 @@ input:hover {
 .input-line .material-symbols-outlined,
 .fullname-line .material-symbols-outlined {
     position: absolute;
-    left: 165px;
+    left: 170px;
     margin: 17px 2px;
     color: #f26a6c;
     font-size: 28px;
@@ -205,4 +205,126 @@ button:active {
 .success-cnt h1 {
     text-align: left;
     text-align-last: left;
+}
+.error-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffe2e2;
+    border-left: 4px solid #f26a6c;
+    padding: 12px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    margin-top: 0;
+    width: 90%;
+}
+
+.error-message .material-symbols-outlined {
+    color: #f26a6c;
+    font-size: 22px;
+}
+
+.error-message p {
+    margin: 0;
+    color: #d32f2f;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        padding: 1rem;
+        text-align: center;
+    }
+    .phone-number, .phone-wrapper, .right-part {
+        display: none;
+    }
+    .nav-links {
+        justify-content: center;
+        gap: 1.5rem;
+    }
+    .main-cnt {
+        padding: 0;
+    }
+    
+    .navbar a {
+        font-size: 14px;
+    }
+    
+    .logo-img {
+        width: 10vh;
+    }
+    
+    main {
+        flex-direction: column;
+        padding: 1rem 0;
+    }
+    
+    .left-part {
+        width: 100%;
+        text-align: left;
+        align-items: left;
+    }
+    
+    h1 {
+        font-size: 38px;
+        text-align: center;
+    }
+    
+    p {
+        font-size: 18px;
+        text-align: left;
+    }
+    p br {
+        display: none;
+    }
+    .main-btn {
+        width: 200px;
+        font-size: 16px;
+        padding: 12px;
+
+    }
+    
+    button {
+        width: 200px;
+        height: 55px;
+        font-size: 16px;
+    }
+    
+    .forms {
+        align-items: left;
+    }
+    
+    .input-group {
+        max-width: 100%;
+    }
+    
+    input {
+        height: 55px;
+        font-size: 16px;
+        padding-left: 50px;
+    }
+    
+    .success-cnt {
+        align-items: left;
+        text-align: left;
+        padding: 0;
+        background-color: transparent;
+        gap: 2rem;
+    }
+    
+    .success-cnt h1 {
+        text-align: left;
+        font-size: 36px;
+    }
+    .phone-line .material-symbols-outlined,
+    .input-line .material-symbols-outlined,
+    .fullname-line .material-symbols-outlined {
+        position: absolute;
+        left: 23px;
+        margin: 13px 2px;
+        color: #f26a6c;
+        font-size: 28px;
+        pointer-events: none;
+    }
 }
