@@ -20,10 +20,10 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 4rem;
-    padding: 3rem 6rem;
-    margin-left: 50px;
-    margin-right: 50px;
+    padding: 1rem 9rem;
     background-color: #f6ddd9;
+    box-shadow: 0 5px 15px rgba(242,106,108, 0.5);
+    overflow: visible;
 }
 .nav-links {
     display: flex;
@@ -53,8 +53,9 @@ a {
     display: flex;
     flex-direction: column;
     align-items: left;
-    gap: 1.5rem;
+    gap: 2rem;
     width: 700px;
+    margin-top: 3rem;
     background-color:  #f6ddd9;
 }
 .right-part {
@@ -65,28 +66,84 @@ a {
     margin-left: 120px;
     border-radius: 10%;
     overflow: visible;
+    margin-top: 3rem;
+}
+.profile-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.profile-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 1px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 30px;
+    color: #f26a6c;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% - 8px);
+    left: -50%;
+    width: 220px;
+    background: #f6ddd9;
+    border-radius: 20px;
+    box-shadow: 0 0 15px rgba(242,106,108,.5);
+    padding: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: .25s;
+    z-index: 1000;
+}
+
+.profile-dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-menu a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    border-radius: 12px;
+    color: #2E2E2E;
+    transition: .2s;
+}
+
+.dropdown-menu a:hover {
+    background: #fbeeec;
+}
+
+.logout-link {
+    color: #f26a6c !important;
 }
 
 .nails1 {
     position: absolute;
     top: 5%;
-    right: 5%;
     width: 55%;
     height: auto;
     border-radius: 15%;
-    z-index: 1;
-    box-shadow: 3px -3px 12px rgba(242,106,108, 0.5);
+    z-index: 2;
+    box-shadow: -3px -3px 15px rgba(242,106,108, 0.5);
 }
 
 .nails2 {
     position: absolute;
-    bottom: 1%;
-    left: 1%;
+    bottom: 0;
+    right: 4%;
     width: 60%;
     height: auto;
     border-radius: 15%;
-    z-index: 2;
-    box-shadow: -3px 3px 12px rgba(242,106,108, 0.5);
+    z-index: 1;
+    box-shadow: 3px 3px 15px rgba(242, 106, 108, 0.5);
 }
 main {
     display: flex;
@@ -121,15 +178,24 @@ p {
     font-weight: 400;
     margin-top: 6%;
 }
-.material-symbols-outlined {
+
+.login-logo {
+    font-size: 32px !important;
     color: #f26a6c;
 }
 .phone-wrapper {
     display: flex;
     align-items: center;
     gap: 10px;
+    overflow: visible;
 }
 .forms {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    gap: 2rem;
+}
+.register-form {
     display: flex;
     flex-direction: column;
     align-items: left;
@@ -141,13 +207,16 @@ input {
     border-radius: 20px;
     border: none;
     justify-content: center;
+    border: 2px solid transparent;
     font-size: 18px;
     padding: 0 60px;
     font-family: 'Inter', sans-serif;
     transition: all 0.3s ease;
+    background: white;
 }
 input:focus {
-    outline: 2px solid #f26a6c;
+    outline: none;
+    border-color: #f26a6c;
     box-shadow: 0 0 12px rgba(242,106,108, 0.5);
 }
 input:hover {
@@ -160,13 +229,24 @@ input:hover {
 }
 .phone-line .material-symbols-outlined,
 .input-line .material-symbols-outlined,
-.fullname-line .material-symbols-outlined {
+.fullname-line .material-symbols-outlined,
+.email-line .material-symbols-outlined,
+.password-line .material-symbols-outlined,
+.confirm-password-line .material-symbols-outlined {
     position: absolute;
     left: 170px;
     margin: 17px 2px;
     color: #f26a6c;
     font-size: 28px;
     pointer-events: none;
+}
+.login-checkout {
+    display: flex;
+    flex-direction: row;
+    gap: 7px;
+    margin: 1rem 0;
+    text-align: center;
+    font-size: 18px;
 }
 button {
     width: 40%;
@@ -177,7 +257,7 @@ button {
     color: #ffe2e2;
     font-size: 20px;
     font-family: 'Inter', sans-serif;
-    margin-top: 3rem;
+    margin-top: 1.5rem;
     transition: all 0.3s ease-out;
 }
 button:hover {
@@ -217,6 +297,18 @@ button:active {
     margin-bottom: 20px;
     margin-top: 0;
     width: 90%;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .error-message .material-symbols-outlined {
