@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Playfair+Display:ital@0;1&display=swap"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&display=swap"
+          rel="stylesheet"/>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
+    <title>Каталог услуг</title>
+</head>
+<body>
+<nav>
+    <div class="navbar">
+        <div class="nav-links">
+            <img src="/static/images/nail.png" alt="logo" class="logo-img">
+            <a href="{{ url_for('home') }}"><span>ГЛАВНАЯ</span></a>
+            <a href="#"><span>УСЛУГИ</span></a>
+            <a href="#"><span>ГАЛЕРЕЯ</span></a>
+        </div>
+        <div class="phone-wrapper">
+            {% if username %}
+            <span class="material-symbols-outlined login-logo">account_circle</span>
+            <div class="profile-trigger">
+                <a href="#">{{ username }}</a>
+            </div>
+            {% else %}
+            <span class="material-symbols-outlined">login</span>
+            <a href="/register" class="register-link">РЕГИСТРАЦИЯ</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<div class="container-catalog">
+    <div class="item-catalog"><img src="static/images/img-nail-classic.png" alt=""><h3>Маникюр классический</h3>
+        <p>Классический уход за ногтями <br>с покрытием гель-лаком</p>
+        <p class="price">1 500₽</p>
+        <span class="material-symbols-outlined remove">remove</span>
+        <span class="material-symbols-outlined add">add</span></div>
+    <div class="item-catalog"><img src="static/images/img-nail-foot.png" alt=""><h3>Педикюр</h3>
+        <p>Полный уход за стопами <br>и ногтями с покрытием </p>
+        <p class="price">2 000₽</p>
+        <span class="material-symbols-outlined remove">remove</span>
+        <span class="material-symbols-outlined add">add</span></div>
+    <div class="item-catalog"><img src="static/images/img-nail-take-of.png" alt=""><h3>Снятие гель-лака</h3>
+        <p>Бережное снятие гель-лака <br>без повреждения ногтей</p>
+        <p class="price">500₽</p>
+        <span class="material-symbols-outlined remove">remove</span>
+        <span class="material-symbols-outlined add">add</span></div>
+    <div class="item-catalog"><img src="static/images/img-nail-french.png" alt=""><h3>Маникюр + Френч</h3>
+        <p>Классический маникюр <br>с дизайном френч</p>
+        <p class="price">2 000₽</p>
+        <span class="material-symbols-outlined remove">remove</span>
+        <span class="material-symbols-outlined add">add</span></div>
+    <div class="item-catalog"><img src="static/images/img-nail-french.png" alt=""><h3>Маникюр + Френч</h3>
+        <p>Классический маникюр <br>с дизайном френч</p>
+        <p class="price">2 000₽</p>
+        <span class="material-symbols-outlined remove">remove</span>
+        <span class="material-symbols-outlined add">add</span></div>
+</div>
+</body>
+</html>

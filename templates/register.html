@@ -3,34 +3,36 @@
 {% block title %}Регистрация{% endblock %}
 
 {% block left_content %}
-<div class="auth-container">    
-    <form method="post" class="forms">
-        <h1>Регистрация</h1>
-    
-        {% if error %}
-        <div class="error-message">{{ error }}</div>
-        {% endif %}
-        <div class="register-form">
-            <div class="email-line">
-                <span class="material-symbols-outlined">email</span>
-                <input type="email" name="email" value="{{ email or '' }}" placeholder="Email" required>
+<div class="left-part">
+    <div class="auth-container">    
+        <form method="post" class="forms">
+            <h1>Регистрация</h1>
+        
+            {% if error %}
+            <div class="error-message">{{ error }}</div>
+            {% endif %}
+            <div class="register-form">
+                <div class="email-line">
+                    <span class="material-symbols-outlined">email</span>
+                    <input type="email" name="email" value="{{ email or '' }}" placeholder="Email" required>
+                </div>
+                <div class="input-line">
+                    <span class="material-symbols-outlined">badge</span>
+                    <input type="text" name="username" value="{{ username or '' }}" placeholder="Имя" required>
+                </div>
+                <div class="email-line">
+                    <span class="material-symbols-outlined">password</span>
+                    <input type="password" name="password" placeholder="Пароль" required>
+                </div>
+                <div class="confirm-password-line">
+                    <span class="material-symbols-outlined">password</span>
+                    <input type="password" name="confirm_password" placeholder="Подтвердите пароль" required>
+                </div>
+                <button type="submit">Зарегистрироваться</button>
             </div>
-            <div class="input-line">
-                <span class="material-symbols-outlined">badge</span>
-                <input type="text" name="username" value="{{ username or '' }}" placeholder="Имя" required>
-            </div>
-            <div class="email-line">
-                <span class="material-symbols-outlined">password</span>
-                <input type="password" name="password" placeholder="Пароль" required>
-            </div>
-            <div class="confirm-password-line">
-                <span class="material-symbols-outlined">password</span>
-                <input type="password" name="confirm_password" placeholder="Подтвердите пароль" required>
-            </div>
-            <button type="submit">Зарегистрироваться</button>
-        </div>
-    </form>
-    
-    <p class="login-checkout">Уже есть аккаунт? <a href="/login">Войти</a></p>
+        </form>
+        
+        <p class="login-checkout">Уже есть аккаунт? <a href="/login">Войти</a></p>
+    </div>
 </div>
 {% endblock %}

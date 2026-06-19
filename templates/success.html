@@ -3,6 +3,7 @@
 {% block title %}Заявка принята{% endblock %}
 
 {% block left_content %}
+<div class="left-part">
     <div class="success-cnt">
         <h1>Заявка принята!</h1>
         <p>Спасибо, {{ name }}!<br>
@@ -10,4 +11,5 @@
         в ближайшее время.</p>
         <a href="{{ url_for('home') }}" class="main-btn">Вернуться на главную</a>
     </div>
+</div>
 {% endblock %}

@@ -3,23 +3,25 @@
 {% block title %}Вход{% endblock %}
 
 {% block left_content %}
-<div class="auth-container">    
-    <form method="post" class="forms">
-        <h1>Вход</h1>
-        {% if error %}
-        <div class="error-message">{{ error }}</div>
-        {% endif %}
-        <div class="email-line">
-            <span class="material-symbols-outlined">email</span>
-            <input type="email" name="email" value="{{ email or '' }}" placeholder="Email" required>
+<div class="left-part">
+    <div class="auth-container">    
+        <form method="post" class="forms">
+            <h1>Вход</h1>
+            {% if error %}
+            <div class="error-message">{{ error }}</div>
+            {% endif %}
+            <div class="email-line">
+                <span class="material-symbols-outlined">email</span>
+                <input type="email" name="email" value="{{ email or '' }}" placeholder="Email" required>
+                </div>
+            <div class="email-line">
+                <span class="material-symbols-outlined">password</span>
+                <input type="password" name="password" placeholder="Пароль" required>
             </div>
-        <div class="email-line">
-            <span class="material-symbols-outlined">password</span>
-            <input type="password" name="password" placeholder="Пароль" required>
-        </div>
-        <button type="submit">Войти</button>
-    </form>
-    
-    <p class="login-checkout">Нет аккаунта? <a href="/register">Зарегистрироваться</a></p>
+            <button type="submit">Войти</button>
+        </form>
+        
+        <p class="login-checkout">Нет аккаунта? <a href="/register">Зарегистрироваться</a></p>
+    </div>
 </div>
 {% endblock %}

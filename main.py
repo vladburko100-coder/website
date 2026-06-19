@@ -2,12 +2,11 @@ import asyncio
 from fastapi import Depends, FastAPI, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from psutil import users
+from starlette.middleware.sessions import SessionMiddleware
 from utils.templates import templates
 import uvicorn
 from sqlalchemy.orm import Session
 from bot import send_application
-from pydantic_schema import Users
 from database import engine, get_db, Base
 from models import User
 from auth import get_password_hash, verify_password
@@ -16,6 +15,7 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.add_middleware(SessionMiddleware, secret_key="super-secret-key")
 
 
 @app.get('/', name='home')
@@ -24,12 +24,36 @@ def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "username": username})
 
 
+@app.get('/catalog', name='catalog')
+def catalog(request: Request):
+    username = request.cookies.get("username")
+    return templates.TemplateResponse('catalog.html', {"request": request, "username": username})
+
+
 @app.get('/application', name='application')
 def application(request: Request):
     username = request.cookies.get("username")
     return templates.TemplateResponse("application.html", {
         "request": request,
         "username": username
+    })
+
+
+@app.get('/success', name='success_page')
+def success_page(request: Request):
+    username = request.cookies.get("username")
+
+    user_data = request.session.pop("application_data", {})
+
+    if not user_data:
+        return RedirectResponse(url='/', status_code=303)
+
+    return templates.TemplateResponse("success.html", {
+        "request": request,
+        "phone": user_data.get("phone"),
+        "name": user_data.get("name"),
+        "fullname": user_data.get("fullname"),
+        "username": username,
     })
 
 
@@ -46,15 +70,15 @@ async def submit_form(request: Request, phone: str = Form(...), name: str = Form
             "username": username,
         })
     else:
-        asyncio.create_task(send_application(phone, name, fullname))
+        await asyncio.create_task(send_application(phone, name, fullname))
 
-        return templates.TemplateResponse("success.html", {
-            "request": request, 
-            "phone": phone, 
-            "name": name, 
-            "fullname": fullname,
-            "username": username,
-        })
+        request.session["application_data"] = {
+            "phone": phone,
+            "name": name,
+            "fullname": fullname
+        }
+
+        return RedirectResponse(url="/success", status_code=303)
 
 
 @app.get('/register', name='register')

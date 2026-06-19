@@ -17,32 +17,15 @@
             <div class="nav-links">
                 <img src="/static/images/nail.png" alt="logo" class="logo-img">
                 <a href="{{ url_for('home') }}"><span>ГЛАВНАЯ</span></a>
-                <a href="#"><span>УСЛУГИ</span></a>
+                <a href="/catalog"><span>УСЛУГИ</span></a>
                 <a href="#"><span>ГАЛЕРЕЯ</span></a>
             </div>
             <div class="phone-wrapper">
                 {% if username %}
                     <span class="material-symbols-outlined login-logo">account_circle</span>
-                    <div class="profile-dropdown">
                         <div class="profile-trigger">
-                            <span>{{ username }}</span>
+                            <a href="#" class="username">{{ username }}</a>
                         </div>
-                        <div class="dropdown-menu">
-                            <a href="#">
-                                <span class="material-symbols-outlined">person</span>
-                                Профиль
-                            </a>
-
-                            <a href="#">
-                                <span class="material-symbols-outlined">shopping_bag</span>
-                                Корзина
-                            </a>
-                            <a href="{{ url_for('logout') }}" class="logout-link">
-                                <span class="material-symbols-outlined">logout</span>
-                                Выйти
-                            </a>
-                        </div>
-                    </div>
                 {% else %}
                     <span class="material-symbols-outlined">login</span>
                     <a href="/register" class="register-link">РЕГИСТРАЦИЯ</a>
@@ -53,9 +36,7 @@
     
     <main>
         <div class="main-cnt">
-            <div class="left-part">
-                {% block left_content %}{% endblock %}
-            </div>
+            {% block left_content %}{% endblock %}
         </div>
         <div class="right-part">
             <img class="nails1" src="/static/images/nails_first.jpeg" alt="">
