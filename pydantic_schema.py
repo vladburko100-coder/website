@@ -1,7 +1,7 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
-class Users(BaseModel):
-    name: str = Field(...)
-    fullname: str = Field(...)
-    phone: str = Field(...)
+class CartUpdateRequest(BaseModel):
+    product_id: int
+    quantity: int
+    action: str

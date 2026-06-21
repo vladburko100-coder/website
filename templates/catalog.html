@@ -27,7 +27,7 @@
             {% if username %}
             <span class="material-symbols-outlined login-logo">account_circle</span>
             <div class="profile-trigger">
-                <a href="#">{{ username }}</a>
+                <a href="#" class="username">{{ username }}</a>
             </div>
             {% else %}
             <span class="material-symbols-outlined">login</span>
@@ -38,31 +38,136 @@
 </nav>
 
 <div class="container-catalog">
-    <div class="item-catalog"><img src="static/images/img-nail-classic.png" alt=""><h3>Маникюр классический</h3>
-        <p>Классический уход за ногтями <br>с покрытием гель-лаком</p>
-        <p class="price">1 500₽</p>
-        <span class="material-symbols-outlined remove">remove</span>
-        <span class="material-symbols-outlined add">add</span></div>
-    <div class="item-catalog"><img src="static/images/img-nail-foot.png" alt=""><h3>Педикюр</h3>
-        <p>Полный уход за стопами <br>и ногтями с покрытием </p>
-        <p class="price">2 000₽</p>
-        <span class="material-symbols-outlined remove">remove</span>
-        <span class="material-symbols-outlined add">add</span></div>
-    <div class="item-catalog"><img src="static/images/img-nail-take-of.png" alt=""><h3>Снятие гель-лака</h3>
-        <p>Бережное снятие гель-лака <br>без повреждения ногтей</p>
-        <p class="price">500₽</p>
-        <span class="material-symbols-outlined remove">remove</span>
-        <span class="material-symbols-outlined add">add</span></div>
-    <div class="item-catalog"><img src="static/images/img-nail-french.png" alt=""><h3>Маникюр + Френч</h3>
-        <p>Классический маникюр <br>с дизайном френч</p>
-        <p class="price">2 000₽</p>
-        <span class="material-symbols-outlined remove">remove</span>
-        <span class="material-symbols-outlined add">add</span></div>
-    <div class="item-catalog"><img src="static/images/img-nail-french.png" alt=""><h3>Маникюр + Френч</h3>
-        <p>Классический маникюр <br>с дизайном френч</p>
-        <p class="price">2 000₽</p>
-        <span class="material-symbols-outlined remove">remove</span>
-        <span class="material-symbols-outlined add">add</span></div>
+    {% for product in products %}
+    <div class="item-catalog" data-product-id="{{ product.id }}">
+        <img src="{{ product.image }}" alt="{{ product.name }}">
+        <h3>{{ product.name }}</h3>
+        <p>{{ product.about }}</p>
+        <p class="price">{{ product.price }}₽</p>
+        <div class="quantity-controls">
+            <button class="remove-btn" data-action="remove">
+                <span class="material-symbols-outlined">remove</span>
+            </button>
+            <span class="quantity-display" id="qty-{{ product.id }}"></span>
+            <button class="add-btn" data-action="add">
+                <span class="material-symbols-outlined">add</span>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
 </div>
+<div id="toast" class="toast"></div>
+
+<script>
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = `toast ${type}`;
+
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2000);
+    }
+
+    // Функция обновления количества
+    async function updateCart(productId, action) {
+        const quantity = action === 'add' ? 1 : -1;
+        const card = document.querySelector(`.item-catalog[data-product-id="${productId}"]`);
+        const display = card.querySelector('.quantity-display');
+
+        try {
+            const response = await fetch('/cart/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: quantity,
+                    action: action
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                showToast(error.error || 'Ошибка', 'error');
+                return;
+            }
+
+            const data = await response.json();
+            display.textContent = data.quantity > 0 ? data.quantity : '';
+
+            updateCartCounter();
+
+        } catch (error) {
+            console.error('Ошибка:', error);
+            showToast('❌ Ошибка соединения', 'error');
+        }
+    }
+
+    // Функция обновления счетчика в навигации
+    async function updateCartCounter() {
+        try {
+            const response = await fetch('/cart');
+            const data = await response.json();
+
+            const cartLink = document.querySelector('.cart-link');
+            if (cartLink && data.total_items > 0) {
+                cartLink.textContent = `🛒 Корзина (${data.total_items})`;
+            } else if (cartLink) {
+                cartLink.textContent = '🛒 Корзина';
+            }
+        } catch (error) {
+            console.error('Ошибка обновления счетчика:', error);
+        }
+    }
+
+    // Навешиваем обработчики на все кнопки
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.add-btn, .remove-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const card = this.closest('.item-catalog');
+                const productId = parseInt(card.dataset.productId);
+                const action = this.dataset.action;
+
+                const username = '{{ username }}';
+                if (!username || username === 'None') {
+                    showToast('⚠️ Войдите в систему', 'error');
+                    return;
+                }
+
+                updateCart(productId, action);
+            });
+        });
+
+        updateCartCounter();
+
+        async function loadQuantities() {
+            try {
+                const response = await fetch('/cart');
+                const data = await response.json();
+
+                if (data.items) {
+                    data.items.forEach(item => {
+                        const display = document.getElementById(`qty-${item.product_id}`);
+                        if (display) {
+                            display.textContent = item.quantity > 0 ? item.quantity : '';
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки корзины:', error);
+            }
+        }
+
+        loadQuantities();
+    });
+</script>
 </body>
 </html>

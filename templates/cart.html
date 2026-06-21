@@ -24,7 +24,7 @@
                 {% if username %}
                     <span class="material-symbols-outlined login-logo">account_circle</span>
                         <div class="profile-trigger">
-                            <a href="/cart" class="username">{{ username }}</a>
+                            <a href="#" class="username">{{ username }}</a>
                         </div>
                 {% else %}
                     <span class="material-symbols-outlined">login</span>
@@ -33,17 +33,38 @@
             </div>
         </div>
     </nav>
-    
-    <main>
-        <div class="main-cnt">
-            {% block left_content %}{% endblock %}
+    <section>
+        <div class="left-cart">
+            <div class="title-name">
+               <h1>Корзина</h1>
+                <p class="total-items">{{ total_items }} шт.</p>
+            </div>
+                {% for item in items %}
+                <div class="cart-item">
+                    <img src="{{ item.image }}" class="image-item">
+                    <div class="information-item">
+                        <h4 class="name-item">{{ item.name }}</h4>
+                        <p class="about-item">{{ item.about }}</p>
+                    </div>
+                    <div class="count-item">
+                        <p class="quantity-item">{{ item.quantity }} шт.</p>
+                    </div>
+                    <div class="price-item">
+                        <p class="price-item">{{ item.price * item.quantity}} ₽</p>
+                    </div>
+                </div>
+                {% endfor %}
         </div>
-        <div class="right-part">
-            <img class="nails1" src="/static/images/nails_first.jpeg" alt="">
-            <img class="nails2" src="/static/images/nails_second.jpeg" alt="">
-            {% block right_content %}{% endblock %}
+        <div class="right-cart">
+            <div class="total-info">
+                <p>Товары, {{ total_items }} шт.</p>
+            </div>
+            <div class="total-price">
+                <span>Итого:</span>
+                <span>{{ total_price }}₽</span>
+            </div>
+            <button type="submit" class="cart-btn">Заказать</button>
         </div>
-    </main>
-    {% block scripts %}{% endblock %}
+    </section>
 </body>
 </html>
