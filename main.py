@@ -1,4 +1,6 @@
 import asyncio
+from datetime import datetime
+
 from fastapi import Depends, FastAPI, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -8,10 +10,10 @@ from utils.templates import templates
 import uvicorn
 import base64
 from sqlalchemy.orm import Session
-from bot import send_application
+from bot import send_application, send_cart_user
 from database import engine, get_db, Base
 from models import User, Product, Cart, CartItem
-from pydantic_schema import CartUpdateRequest
+from pydantic_schema import CartUpdateRequest, OrderItem, OrderRequest
 from auth import get_password_hash, verify_password
 
 Base.metadata.create_all(bind=engine)
@@ -32,6 +34,8 @@ def home(request: Request):
 @app.get('/cart', name='cart')
 def cart(request: Request, db: Session = Depends(get_db)):
     username = request.cookies.get("username")
+    if not username:
+        return RedirectResponse(url='/register', status_code=303)
     username = base64.b64decode(username).decode('utf-8')
     user = db.query(User).filter(User.username == username).first()
 
@@ -67,6 +71,62 @@ def cart(request: Request, db: Session = Depends(get_db)):
             })
     return templates.TemplateResponse("cart.html", {"request": request, "username": username, 'items': items,
                                                     "total_items": total_items, "total_price": total_price, })
+
+
+@app.delete('/cart/items/{item_id}')
+def delete_items(item_id: int, request: Request, db: Session = Depends(get_db)):
+    user = request.cookies.get("username")
+    username = base64.b64decode(user).decode('utf-8')
+    user = db.query(User).filter(User.username == username).first()
+    cart_item = db.query(CartItem).filter(CartItem.id == item_id).first()
+    if not cart_item:
+        return JSONResponse({"error": "Товар не найден в корзине"}, status_code=404)
+    cart = db.query(Cart).filter(Cart.id == cart_item.cart_id, Cart.user_id == user.id).first()
+    if cart:
+        db.delete(cart_item)
+        db.commit()
+        items = []
+        total_price = 0
+        total_items = 0
+
+        for item in cart.items:
+            product = item.product
+            if product:
+                item_total = product.price * item.quantity
+                total_price += item_total
+                total_items += item.quantity
+                items.append({
+                    "id": item.id,
+                    "product_id": product.id,
+                    "name": product.name,
+                    "price": product.price,
+                    "quantity": item.quantity,
+                    "total": item_total,
+                    "image": product.image,
+                    "about": product.about,
+                })
+
+        return JSONResponse({
+            "items": items,
+            "total_items": total_items,
+            "total_price": total_price,
+            "message": "Товар удалён"
+        })
+
+
+@app.post('/order')
+async def order_cart(request: Request, order_req: OrderRequest, db: Session = Depends(get_db)):
+    await asyncio.create_task(send_cart_user(order_req))
+    username = request.cookies.get('username')
+    username = base64.b64decode(username).decode('utf-8')
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        return RedirectResponse(url='/login', status_code=303)
+    cart = db.query(Cart).filter(Cart.user_id == user.id).first()
+    if cart:
+        db.query(CartItem).filter(CartItem.cart_id == cart.id).delete()
+        db.commit()
+    return RedirectResponse(url='/catalog', status_code=303)
 
 
 @app.post('/cart/update', name='cart_update')
@@ -112,10 +172,17 @@ def cart_update(request: Request, data: CartUpdateRequest, db: Session = Depends
     total_quantity = updated_item.quantity if updated_item else 0
     total_items = db.query(CartItem).filter(CartItem.cart_id == cart.id).count()
 
+    total_price = 0
+    for item in cart.items:
+        product = item.product
+        if product:
+            total_price += product.price * item.quantity
+
     return JSONResponse({
         "product_id": data.product_id,
         "quantity": total_quantity,
         "total_items": total_items,
+        "total_price": total_price,
         "total_quantity": total_quantity,
     })
 

@@ -40,17 +40,26 @@
                 <p class="total-items">{{ total_items }} шт.</p>
             </div>
                 {% for item in items %}
-                <div class="cart-item">
+                <div class="cart-item" data-product-id="{{ item.product_id }}" data-item-id="{{ item.id }}" data-price="{{ item.price }}">
                     <img src="{{ item.image }}" class="image-item">
                     <div class="information-item">
                         <h4 class="name-item">{{ item.name }}</h4>
                         <p class="about-item">{{ item.about }}</p>
+                        <button class="delete-btn" data-item-id="{{ item.id }}">
+                            <span class="material-symbols-outlined delete">delete</span>
+                        </button>
                     </div>
+                    <button class="remove-btn-item" data-action="remove">
+                        <span class="material-symbols-outlined">remove</span>
+                    </button>
                     <div class="count-item">
                         <p class="quantity-item">{{ item.quantity }} шт.</p>
                     </div>
+                    <button class="add-btn-item" data-action="add">
+                        <span class="material-symbols-outlined">add</span>
+                    </button>
                     <div class="price-item">
-                        <p class="price-item">{{ item.price * item.quantity}} ₽</p>
+                        <p class="price-item-count">{{ item.price * item.quantity}} ₽</p>
                     </div>
                 </div>
                 {% endfor %}
@@ -64,12 +73,175 @@
                     <span>Итого:</span>
                     <span>{{ total_price }}₽</span>
                 </div>
-                <button type="submit" class="cart-btn">Заказать</button>
+                <button type="button" class="cart-btn">Заказать</button>
             </div>
             <div class="logout-cart">
                 <a href="/logout" class="logout-btn">Выйти</a>
             </div>
         </div>
     </section>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ============================================
+        // ФУНКЦИЯ ОБНОВЛЕНИЯ СОСТОЯНИЯ КНОПКИ
+        // ============================================
+        function updateOrderButton() {
+            const totalItemsElem = document.querySelector('.total-items');
+            const totalItems = parseInt(totalItemsElem?.textContent) || 0;
+            const orderBtn = document.querySelector('.cart-btn');
+
+            if (orderBtn) {
+                if (totalItems === 0) {
+                    orderBtn.classList.add('disabled');
+                } else {
+                    orderBtn.classList.remove('disabled');
+                }
+            }
+        }
+
+        // ============================================
+        // 1. УДАЛЕНИЕ ТОВАРА
+        // ============================================
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', async function(e) {
+                e.preventDefault();
+
+                const itemId = this.dataset.itemId;
+                if (!itemId) return;
+
+                try {
+                    const response = await fetch(`/cart/items/${itemId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        alert(error.error || 'Ошибка удаления');
+                        return;
+                    }
+
+                    location.reload();
+
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                    alert('❌ Ошибка соединения');
+                }
+            });
+        });
+
+        // ============================================
+        // 2. ОБНОВЛЕНИЕ КОЛИЧЕСТВА (+ и -)
+        // ============================================
+        document.querySelectorAll('.add-btn-item, .remove-btn-item').forEach(button => {
+            button.addEventListener('click', async function(e) {
+                e.preventDefault();
+
+                const action = this.dataset.action;
+                const cartItem = this.closest('.cart-item');
+                if (!cartItem) return;
+
+                const productId = parseInt(cartItem.dataset.productId);
+                if (isNaN(productId)) return;
+
+                try {
+                    const response = await fetch('/cart/update', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            product_id: productId,
+                            action: action,
+                            quantity: 1
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        alert(error.error || 'Ошибка обновления');
+                        return;
+                    }
+
+                    location.reload();
+
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                    alert('❌ Ошибка соединения');
+                }
+            });
+        });
+
+        // ============================================
+        // 3. ОФОРМЛЕНИЕ ЗАКАЗА
+        // ============================================
+        const orderBtn = document.querySelector('.cart-btn');
+        if (orderBtn) {
+            orderBtn.addEventListener('click', async function(e) {
+                // Если кнопка disabled — ничего не делаем
+                if (this.classList.contains('disabled')) {
+                    e.preventDefault();
+                    return;
+                }
+
+                e.preventDefault();
+
+                // Собираем данные о товарах
+                const items = [];
+                document.querySelectorAll('.cart-item').forEach(cartItem => {
+                    const name = cartItem.querySelector('.name-item')?.textContent || 'Без названия';
+                    const quantity = parseInt(cartItem.querySelector('.quantity-item')?.textContent) || 0;
+                    const price = parseFloat(cartItem.querySelector('.price-item-count')?.textContent) || 0;
+
+                    if (quantity > 0) {
+                        items.push({ name, quantity, price });
+                    }
+                });
+
+                const totalPriceElem = document.querySelector('.total-price span:last-child');
+                const totalPrice = parseFloat(totalPriceElem?.textContent) || 0;
+
+                const usernameElem = document.querySelector('.username');
+                const username = usernameElem?.textContent || 'Гость';
+
+                const orderData = {
+                    username: username,
+                    items: items,
+                    total_items: items.reduce((sum, item) => sum + item.quantity, 0),
+                    total_price: totalPrice
+                };
+
+                try {
+                    const response = await fetch('/order', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(orderData)
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        alert(error.error || 'Ошибка оформления заказа');
+                        return;
+                    }
+
+                    location.reload();
+
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                    alert('❌ Ошибка соединения');
+                }
+            });
+        }
+
+        // ============================================
+        // ПРИ ЗАГРУЗКЕ СТРАНИЦЫ ОБНОВЛЯЕМ КНОПКУ
+        // ============================================
+        updateOrderButton();
+    });
+</script>
 </body>
 </html>

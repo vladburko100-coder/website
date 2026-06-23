@@ -57,7 +57,6 @@
     {% endfor %}
 </div>
 <div id="toast" class="toast"></div>
-
 <script>
     function showToast(message, type = 'success') {
         const toast = document.getElementById('toast');
@@ -73,18 +72,13 @@
         }, 2000);
     }
 
-    // Функция обновления количества
-    async function updateCart(productId, action) {
+    // Отправка запроса на сервер (без изменения локального display)
+    async function sendCartUpdate(productId, action) {
         const quantity = action === 'add' ? 1 : -1;
-        const card = document.querySelector(`.item-catalog[data-product-id="${productId}"]`);
-        const display = card.querySelector('.quantity-display');
-
         try {
             const response = await fetch('/cart/update', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     product_id: productId,
                     quantity: quantity,
@@ -95,26 +89,24 @@
             if (!response.ok) {
                 const error = await response.json();
                 showToast(error.error || 'Ошибка', 'error');
-                return;
+                return false;
             }
 
-            const data = await response.json();
-            display.textContent = data.quantity > 0 ? data.quantity : '';
-
-            updateCartCounter();
-
+            // Обновляем только счётчик в навигации (если нужно)
+            await updateCartCounter();
+            return true;
         } catch (error) {
             console.error('Ошибка:', error);
             showToast('❌ Ошибка соединения', 'error');
+            return false;
         }
     }
 
-    // Функция обновления счетчика в навигации
+    // Обновление счётчика в навигации (опционально)
     async function updateCartCounter() {
         try {
             const response = await fetch('/cart');
             const data = await response.json();
-
             const cartLink = document.querySelector('.cart-link');
             if (cartLink && data.total_items > 0) {
                 cartLink.textContent = `🛒 Корзина (${data.total_items})`;
@@ -126,8 +118,10 @@
         }
     }
 
-    // Навешиваем обработчики на все кнопки
+    // Обработка кликов по кнопкам
     document.addEventListener('DOMContentLoaded', function() {
+        // При загрузке все количества пустые (0) – это уже есть в HTML
+
         document.querySelectorAll('.add-btn, .remove-btn').forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -135,38 +129,37 @@
                 const card = this.closest('.item-catalog');
                 const productId = parseInt(card.dataset.productId);
                 const action = this.dataset.action;
+                const display = card.querySelector('.quantity-display');
 
+                // Проверка авторизации
                 const username = '{{ username }}';
                 if (!username || username === 'None') {
                     showToast('⚠️ Войдите в систему', 'error');
                     return;
                 }
 
-                updateCart(productId, action);
+                // Текущее отображаемое число (пусто → 0)
+                let current = parseInt(display.textContent) || 0;
+
+                if (action === 'add') {
+                    current += 1;
+                    display.textContent = current;
+                    sendCartUpdate(productId, action);
+                } else if (action === 'remove') {
+                    if (current <= 0) return; // ничего не делаем
+                    current -= 1;
+                    if (current > 0) {
+                        display.textContent = current;
+                    } else {
+                        display.textContent = ''; // скрываем 0
+                    }
+                    sendCartUpdate(productId, action);
+                }
             });
         });
 
+        // Загружаем только счётчик в навигации (количества на карточках не трогаем)
         updateCartCounter();
-
-        async function loadQuantities() {
-            try {
-                const response = await fetch('/cart');
-                const data = await response.json();
-
-                if (data.items) {
-                    data.items.forEach(item => {
-                        const display = document.getElementById(`qty-${item.product_id}`);
-                        if (display) {
-                            display.textContent = item.quantity > 0 ? item.quantity : '';
-                        }
-                    });
-                }
-            } catch (error) {
-                console.error('Ошибка загрузки корзины:', error);
-            }
-        }
-
-        loadQuantities();
     });
 </script>
 </body>
