@@ -4,6 +4,7 @@ from datetime import datetime
 from fastapi import Depends, FastAPI, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 from utils.templates import templates
@@ -19,6 +20,18 @@ from auth import get_password_hash, verify_password
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+origins = [
+    "https://b-nails.netlify.app",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.add_middleware(SessionMiddleware, secret_key="super-secret-key")
 
