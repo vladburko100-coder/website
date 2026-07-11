@@ -9,8 +9,8 @@ from pydantic_schema import OrderRequest
 
 load_dotenv()
 
-TOKEN = os.getenv('TOKEN-BOT')
-CHAT_ID = os.getenv('CHAT-ID')
+TOKEN = os.getenv('TOKEN_BOT')
+CHAT_ID = os.getenv('CHAT_ID')
 bot = Bot(token=TOKEN)
 
 router = Router()
