@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
-from utils.templates import templates
+from core.templates import templates
 import uvicorn
 import base64
 from sqlalchemy.orm import Session
@@ -21,6 +21,7 @@ app = FastAPI()
 
 origins = [
     "https://b-nails.netlify.app",
+    "http://localhost:8000",
 ]
 app.add_middleware(
     CORSMiddleware,
