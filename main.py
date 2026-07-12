@@ -1,6 +1,4 @@
 import asyncio
-from datetime import datetime
-
 from fastapi import Depends, FastAPI, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -14,7 +12,7 @@ from sqlalchemy.orm import Session
 from bot import send_application, send_cart_user
 from database import engine, get_db, Base
 from models import User, Product, Cart, CartItem
-from pydantic_schema import CartUpdateRequest, OrderItem, OrderRequest
+from pydantic_schema import CartUpdateRequest, OrderRequest
 from auth import get_password_hash, verify_password
 
 Base.metadata.create_all(bind=engine)
